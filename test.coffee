@@ -6,8 +6,10 @@ class MyClass extends EventEmitter
     super
 
 myClass = new MyClass("awesome")
+handler = -> 1 + 1
 
-myClass.bind 'event', -> console.log('custom event')
-myClass.trigger('event')
-myClass.unbind('event')
-myClass.trigger('event')
+myClass.bind 'click', handler
+myClass.bind 'click.server', handler
+myClass.bind 'click.client', handler
+myClass.bind 'mouseover.client', handler
+
