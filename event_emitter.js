@@ -51,7 +51,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         func = _ref[_i];
         _results.push((function(func) {
-          return func.apply.apply(func, [this].concat(__slice.call(args)));
+          return func.apply(this, args);
         })(func));
       }
       return _results;

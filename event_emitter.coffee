@@ -45,7 +45,7 @@ class EventEmitter
   trigger: (event, args...) ->
     for func in @events[event]
       do (func) ->
-        func.apply(this, args...)
+        func.apply(this, args)
 
   eventList: ->
     `
