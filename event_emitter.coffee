@@ -6,23 +6,14 @@ class EventEmitter
 
   bind: (events, func) ->
     throw "MissingHandler" unless func
-    events = events.split(' ')
 
-    for event in events
-      identifiers = event.split('.')
-
-      for i in [0..identifiers.length-1]
-        if i is 0
-          identifier = identifiers[i]
-        else
-          identifier = identifiers[0] + "." + identifiers[i]
-
-        @events[identifier] = [] if not @events[identifier]?
-        @events[identifier].push(func)
+    for event in @splitEvents(events)
+      @events[event] = [] if not @events[event]?
+      @events[event].push(func)
 
   unbind: (identifiers, func) ->
     identifiers = identifiers.split(' ')
-    for event in this.eventList()
+    for event in @eventList()
       if func?
         handlerToBeDeleted = @events[identifiers].indexOf(func)
         if handlerToBeDeleted isnt -1
@@ -35,6 +26,19 @@ class EventEmitter
       for func in @events[event]
         do (func) ->
           func.apply(this, args)
+
+  splitEvents: (events) ->
+    names = []
+
+    for event in events.split(' ')
+      nameParts = event.split('.')
+      for i in [0..nameParts.length-1]
+        if i is 0
+          names.push nameParts[i]
+        else
+          names.push nameParts[0] + "." + nameParts[i]
+
+    return names
 
   eventList: ->
     `

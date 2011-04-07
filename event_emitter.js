@@ -7,31 +7,18 @@
       this.events = {};
     }
     EventEmitter.prototype.bind = function(events, func) {
-      var event, i, identifier, identifiers, _i, _len, _results;
+      var event, _i, _len, _ref, _results;
       if (!func) {
         throw "MissingHandler";
       }
-      events = events.split(' ');
+      _ref = this.splitEvents(events);
       _results = [];
-      for (_i = 0, _len = events.length; _i < _len; _i++) {
-        event = events[_i];
-        identifiers = event.split('.');
-        _results.push((function() {
-          var _ref, _results;
-          _results = [];
-          for (i = 0, _ref = identifiers.length - 1; (0 <= _ref ? i <= _ref : i >= _ref); (0 <= _ref ? i += 1 : i -= 1)) {
-            if (i === 0) {
-              identifier = identifiers[i];
-            } else {
-              identifier = identifiers[0] + "." + identifiers[i];
-            }
-            if (!(this.events[identifier] != null)) {
-              this.events[identifier] = [];
-            }
-            _results.push(this.events[identifier].push(func));
-          }
-          return _results;
-        }).call(this));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        if (!(this.events[event] != null)) {
+          this.events[event] = [];
+        }
+        _results.push(this.events[event].push(func));
       }
       return _results;
     };
@@ -60,6 +47,23 @@
         }
         return _results;
       }
+    };
+    EventEmitter.prototype.splitEvents = function(events) {
+      var event, i, nameParts, names, _i, _len, _ref, _ref2;
+      names = [];
+      _ref = events.split(' ');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        nameParts = event.split('.');
+        for (i = 0, _ref2 = nameParts.length - 1; (0 <= _ref2 ? i <= _ref2 : i >= _ref2); (0 <= _ref2 ? i += 1 : i -= 1)) {
+          if (i === 0) {
+            names.push(nameParts[i]);
+          } else {
+            names.push(nameParts[0] + "." + nameParts[i]);
+          }
+        }
+      }
+      return names;
     };
     EventEmitter.prototype.eventList = function() {
 
