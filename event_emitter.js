@@ -8,6 +8,9 @@
     }
     EventEmitter.prototype.bind = function(events, func) {
       var event, i, identifier, identifiers, _i, _len, _results;
+      if (!func) {
+        throw "MissingHandler";
+      }
       events = events.split(' ');
       _results = [];
       for (_i = 0, _len = events.length; _i < _len; _i++) {
@@ -46,15 +49,17 @@
     EventEmitter.prototype.trigger = function() {
       var args, event, func, _i, _len, _ref, _results;
       event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      _ref = this.events[event];
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        func = _ref[_i];
-        _results.push((function(func) {
-          return func.apply(this, args);
-        })(func));
+      if (this.events[event]) {
+        _ref = this.events[event];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          func = _ref[_i];
+          _results.push((function(func) {
+            return func.apply(this, args);
+          })(func));
+        }
+        return _results;
       }
-      return _results;
     };
     EventEmitter.prototype.eventList = function() {
 
