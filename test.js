@@ -1,5 +1,5 @@
 (function() {
-  var EventEmitter, MyClass, handler, myClass;
+  var EventEmitter, EventEmitterDebug, handler, myClass, util;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -8,21 +8,38 @@
     child.__super__ = parent.prototype;
     return child;
   };
+  util = require('util');
   EventEmitter = require('./event_emitter.js');
-  MyClass = (function() {
-    __extends(MyClass, EventEmitter);
-    function MyClass(name) {
-      this.name = name;
-      MyClass.__super__.constructor.apply(this, arguments);
+  EventEmitterDebug = (function() {
+    function EventEmitterDebug() {
+      EventEmitterDebug.__super__.constructor.apply(this, arguments);
     }
-    return MyClass;
+    __extends(EventEmitterDebug, EventEmitter);
+    EventEmitterDebug.prototype.status = function() {
+      console.log('\n');
+      console.log(util.inspect(this.events));
+      console.log('\n');
+      console.log(util.inspect(this.namespaces));
+      return console.log('\n');
+    };
+    return EventEmitterDebug;
   })();
-  myClass = new MyClass("awesome");
+  myClass = new EventEmitterDebug;
   handler = function() {
     return 1 + 1;
   };
-  myClass.bind('click', handler);
-  myClass.bind('click.server', handler);
-  myClass.bind('click.client', handler);
-  myClass.bind('mouseover.client', handler);
+  myClass.bind('click.server mouse.server focus', handler);
+  myClass.bind('click.server', function(message) {
+    return console.log(message);
+  });
+  myClass.bind('click.random', function() {
+    return 3;
+  });
+  myClass.bind('click', function() {
+    return 2;
+  });
+  myClass.unbind('click', handler);
+  myClass.unbind('.random');
+  myClass.unbind('click.server', handler);
+  myClass.trigger('click.server', ['hello world']);
 }).call(this);
