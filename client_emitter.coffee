@@ -1,5 +1,5 @@
 class ClientEmitter extends EventEmitter
-  constructor: () ->
+  constructor: (io) ->
     @socket = new io.Socket()
     @socket.connect()
     @socket.on 'connect', -> {}

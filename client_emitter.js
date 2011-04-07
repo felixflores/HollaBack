@@ -10,7 +10,7 @@
   }, __slice = Array.prototype.slice;
   ClientEmitter = (function() {
     __extends(ClientEmitter, EventEmitter);
-    function ClientEmitter() {
+    function ClientEmitter(io) {
       this.trigger = __bind(this.trigger, this);;      this.socket = new io.Socket();
       this.socket.connect();
       this.socket.on('connect', function() {

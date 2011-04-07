@@ -1,5 +1,5 @@
 class ServerEmitter extends EventEmitter
-  constructor: (server) ->
+  constructor: (io, server) ->
     @socket = new io.listen(server)
 
     @socket.on 'connection', (client) =>
