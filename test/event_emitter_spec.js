@@ -3,7 +3,7 @@
   vows = require('vows');
   assert = require('assert');
   util = require('util');
-  EventEmitter = require('./event_emitter.js');
+  EventEmitter = require('../event_emitter.js');
   vows.describe('EventEmitter').addBatch({
     'Binding events': {
       topic: new EventEmitter,
@@ -70,17 +70,6 @@
         object.bind('click.client', handler);
         object.bind('click', handler);
         object.trigger('click');
-        return assert.equal(invocations.length, 3);
-      },
-      "namespaces does not have hierarchy": function(object) {
-        var handler, invocations;
-        invocations = [];
-        handler = function() {
-          return invocations.push('trigger');
-        };
-        object.bind('click.server.client', handler);
-        object.bind('click.client.server', handler);
-        object.trigger('click.server.client');
         return assert.equal(invocations.length, 3);
       }
     }

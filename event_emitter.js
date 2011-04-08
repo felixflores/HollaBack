@@ -7,11 +7,28 @@
       this.events = {};
     }
     EventEmitter.prototype.bind = function(events, func) {
-      var event, _i, _len, _ref, _results;
+      var event, splitEvents, _i, _len, _ref, _results;
       if (!func) {
         throw "MissingHandler";
       }
-      _ref = this.splitEvents(events);
+      splitEvents = function(events) {
+        var event, i, nameParts, names, _i, _len, _ref, _ref2;
+        names = [];
+        _ref = events.split(' ');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          event = _ref[_i];
+          nameParts = event.split('.');
+          for (i = 0, _ref2 = nameParts.length - 1; (0 <= _ref2 ? i <= _ref2 : i >= _ref2); (0 <= _ref2 ? i += 1 : i -= 1)) {
+            if (i === 0) {
+              names.push(nameParts[i]);
+            } else {
+              names.push(nameParts[0] + "." + nameParts[i]);
+            }
+          }
+        }
+        return names;
+      };
+      _ref = splitEvents(events);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
@@ -23,9 +40,17 @@
       return _results;
     };
     EventEmitter.prototype.unbind = function(identifiers, func) {
-      var event, handlerToBeDeleted, _i, _len, _ref, _results;
+      var event, eventList, handlerToBeDeleted, _i, _len, _ref, _results;
+      eventList = function() {
+
+      var eventnames = []
+      for(eventname in this.events) {
+        eventnames.push(eventname)
+      }
+      ;        return eventnames;
+      };
       identifiers = identifiers.split(' ');
-      _ref = this.eventList();
+      _ref = eventList();
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
@@ -47,31 +72,6 @@
         }
         return _results;
       }
-    };
-    EventEmitter.prototype.splitEvents = function(events) {
-      var event, i, nameParts, names, _i, _len, _ref, _ref2;
-      names = [];
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        nameParts = event.split('.');
-        for (i = 0, _ref2 = nameParts.length - 1; (0 <= _ref2 ? i <= _ref2 : i >= _ref2); (0 <= _ref2 ? i += 1 : i -= 1)) {
-          if (i === 0) {
-            names.push(nameParts[i]);
-          } else {
-            names.push(nameParts[0] + "." + nameParts[i]);
-          }
-        }
-      }
-      return names;
-    };
-    EventEmitter.prototype.eventList = function() {
-
-    var eventnames = []
-    for(eventname in this.events) {
-      eventnames.push(eventname)
-    }
-    ;      return eventnames;
     };
     return EventEmitter;
   })();
