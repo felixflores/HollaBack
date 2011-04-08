@@ -11,6 +11,10 @@ vows.describe('EventEmitter').addBatch({
       erroneousBinding = -> obj.bind('click')
       assert.throws erroneousBinding, "BindMissingEventHandler"
 
+    "throws an exception if the event handler is missing": (obj) ->
+      erroneousBinding = -> obj.bind('.event', -> 1)
+      assert.throws erroneousBinding, "EventNameUnacceptable"
+
   'Simple triggers':
     topic: new EventEmitter
 
@@ -28,21 +32,30 @@ vows.describe('EventEmitter').addBatch({
     topic: new EventEmitter
 
     "unbind a single event": (obj) ->
-      handler = -> return true
+      invocations = []
+      handler = -> invocations.push('trigger')
 
       obj.bind('click', handler)
       obj.unbind('click')
+      obj.trigger('click')
 
-      assert.notEqual obj.trigger('click'), true
+      assert.equal invocations.length, 1
 
-    "unbind a single event": (obj) ->
-      handler = -> return true
+    "unbiding a namespace": (obj) ->
+      invocations = []
+      handler = -> invocations.push('trigger')
 
-      obj.bind('click', handler)
-      obj.bind('click', handler)
-      obj.unbind('click')
+      obj.bind('click.client', handler)
+      obj.bind('explode.client', handler)
+      obj.unbind('.client', handler)
 
-      assert.notEqual obj.trigger('click'), true
+
+      console.log util.inspect(obj.events)
+
+      obj.trigger('click')
+      obj.trigger('explode')
+
+      assert.equal invocations.length, 0
 
   'Namespacing':
     topic: new EventEmitter

@@ -31,6 +31,9 @@
       _ref = splitEvents(events);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
+        if (event[0] === '.') {
+          throw "EventNameUnacceptable";
+        }
         if (!(this.events[event] != null)) {
           this.events[event] = [];
         }

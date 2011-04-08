@@ -13,6 +13,15 @@
           return obj.bind('click');
         };
         return assert.throws(erroneousBinding, "BindMissingEventHandler");
+      },
+      "throws an exception if the event handler is missing": function(obj) {
+        var erroneousBinding;
+        erroneousBinding = function() {
+          return obj.bind('.event', function() {
+            return 1;
+          });
+        };
+        return assert.throws(erroneousBinding, "EventNameUnacceptable");
       }
     },
     'Simple triggers': {
@@ -33,23 +42,29 @@
     'Simple unbinding': {
       topic: new EventEmitter,
       "unbind a single event": function(obj) {
-        var handler;
+        var handler, invocations;
+        invocations = [];
         handler = function() {
-          return true;
+          return invocations.push('trigger');
         };
         obj.bind('click', handler);
         obj.unbind('click');
-        return assert.notEqual(obj.trigger('click'), true);
+        obj.trigger('click');
+        return assert.equal(invocations.length, 1);
       },
-      "unbind a single event": function(obj) {
-        var handler;
+      "unbiding a namespace": function(obj) {
+        var handler, invocations;
+        invocations = [];
         handler = function() {
-          return true;
+          return invocations.push('trigger');
         };
-        obj.bind('click', handler);
-        obj.bind('click', handler);
-        obj.unbind('click');
-        return assert.notEqual(obj.trigger('click'), true);
+        obj.bind('click.client', handler);
+        obj.bind('explode.client', handler);
+        obj.unbind('.client', handler);
+        console.log(util.inspect(obj.events));
+        obj.trigger('click');
+        obj.trigger('explode');
+        return assert.equal(invocations.length, 0);
       }
     },
     'Namespacing': {

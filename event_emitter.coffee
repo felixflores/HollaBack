@@ -21,6 +21,8 @@ class EventEmitter
       return names
 
     for event in splitEvents(events)
+      throw "EventNameUnacceptable" if event[0] is '.'
+
       @events[event] = [] if not @events[event]?
       @events[event].push(func)
 
