@@ -24,6 +24,8 @@ class EventEmitter
       @events[event] = [] if not @events[event]?
       @events[event].push(func)
 
+    return null
+
   unbind: (identifiers, func) ->
     eventList = ->
       `
@@ -42,6 +44,8 @@ class EventEmitter
           @events[identifiers].splice(handlerToBeDeleted, 1)
       else
         delete @events[identifiers]
+
+    return null
 
   trigger: (event, args...) ->
     if @events[event]?

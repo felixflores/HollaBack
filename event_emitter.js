@@ -7,7 +7,7 @@
       this.events = {};
     }
     EventEmitter.prototype.bind = function(events, func) {
-      var event, splitEvents, _i, _len, _ref, _results;
+      var event, splitEvents, _i, _len, _ref;
       if (!func) {
         throw "BindMissingEventHandler";
       }
@@ -29,18 +29,17 @@
         return names;
       };
       _ref = splitEvents(events);
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
         if (!(this.events[event] != null)) {
           this.events[event] = [];
         }
-        _results.push(this.events[event].push(func));
+        this.events[event].push(func);
       }
-      return _results;
+      return null;
     };
     EventEmitter.prototype.unbind = function(identifiers, func) {
-      var event, eventList, handlerToBeDeleted, _i, _len, _ref, _results;
+      var event, eventList, handlerToBeDeleted, _i, _len, _ref;
       eventList = function() {
 
       var eventnames = []
@@ -51,12 +50,18 @@
       };
       identifiers = identifiers.split(' ');
       _ref = eventList();
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
-        _results.push(func != null ? (handlerToBeDeleted = this.events[identifiers].indexOf(func), handlerToBeDeleted !== -1 ? this.events[identifiers].splice(handlerToBeDeleted, 1) : void 0) : delete this.events[identifiers]);
+        if (func != null) {
+          handlerToBeDeleted = this.events[identifiers].indexOf(func);
+          if (handlerToBeDeleted !== -1) {
+            this.events[identifiers].splice(handlerToBeDeleted, 1);
+          }
+        } else {
+          delete this.events[identifiers];
+        }
       }
-      return _results;
+      return null;
     };
     EventEmitter.prototype.trigger = function() {
       var args, event, func, _i, _len, _ref;
