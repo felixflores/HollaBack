@@ -5,7 +5,7 @@ class EventEmitter
     @events = {}
 
   bind: (events, func) ->
-    throw "MissingHandler" unless func
+    throw "BindMissingEventHandler" unless func
 
     splitEvents = (events) ->
       names = []
@@ -44,11 +44,11 @@ class EventEmitter
         delete @events[identifiers]
 
   trigger: (event, args...) ->
-    if @events[event]
+    if @events[event]?
       for func in @events[event]
-        do (func) ->
-          func.apply(this, args)
+        func.apply(this, args)
 
+    return null
 
 
 if window?

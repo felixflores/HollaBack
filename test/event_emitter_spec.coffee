@@ -7,66 +7,93 @@ vows.describe('EventEmitter').addBatch({
   'Binding events':
     topic: new EventEmitter
 
-    "throws an exception if the event handler is missing": (object) ->
-      erroneousBinding = -> object.bind('click')
-      assert.throws erroneousBinding, "MissingHandler"
+    "throws an exception if the event handler is missing": (obj) ->
+      erroneousBinding = -> obj.bind('click')
+      assert.throws erroneousBinding, "BindMissingEventHandler"
 
   'Simple triggers':
     topic: new EventEmitter
 
-    "can be triggered": (object) ->
-      object.bind('click', -> return "Hello")
-      assert.equal object.trigger('click'), "Hello"
+    "can be triggered": (obj) ->
+      invocations = []
+      obj.bind 'click', -> invocations.push("trigger")
+      obj.trigger('click')
 
-    "does nothing if an event is triggered with no event listeners": (object) ->
-      assert.deepEqual object.trigger('does-not-exists'), undefined
+      assert.equal invocations.length, 1
+
+    "does nothing if an event is triggered with no event listeners": (obj) ->
+      assert.equal obj.trigger('does-not-exists'), null
+
+  'Simple unbinding':
+    topic: new EventEmitter
+
+    "unbind a single event": (obj) ->
+      handler = -> return true
+
+      obj.bind('click', handler)
+      obj.unbind('click')
+
+      assert.notEqual obj.trigger('click'), true
+
+    "unbind a single event": (obj) ->
+      handler = -> return true
+
+      obj.bind('click', handler)
+      obj.bind('click', handler)
+      obj.unbind('click')
+
+      assert.notEqual obj.trigger('click'), true
 
   'Namespacing':
     topic: new EventEmitter
 
-    "can be namespaced": (object) ->
-      object.bind('click.server', -> return "Hello")
-      assert.equal object.trigger('click.server'), "Hello"
+    "can be namespaced": (obj) ->
+      invocations = []
+      obj.bind('click.server', -> return "Hello")
+      obj.bind 'click.server', -> invocations.push("trigger")
+      obj.trigger('click.server')
 
-    "triggers only namespaced events and ignores listeners outside the namespace": (object) ->
+      assert.equal invocations.length, 1
+
+    "triggers only namespaced events and ignores listeners outside the namespace": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
-      object.bind('click.server', handler)
-      object.bind('click', handler)
-      object.trigger('click.server')
+      obj.bind('click.server', handler)
+      obj.bind('click', handler)
+      obj.trigger('click.server')
 
       assert.equal(invocations.length, 1)
 
-    "triggers all events with the same event name regardless of namespace if namespace is not specified": (object) ->
+    "triggers all events with the same event name regardless of namespace if namespace is not specified": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
-      object.bind('click.server', handler)
-      object.bind('click.client', handler)
-      object.bind('click', -> handler)
-      object.trigger('click')
+      obj.bind('click.server', handler)
+      obj.bind('click.client', handler)
+      obj.bind('click', -> handler)
+      obj.trigger('click')
 
       assert.equal(invocations.length, 3)
 
-    "triggers all events with the same event name regardless of namespace if namespace is not specified": (object) ->
+    "triggers all events with the same event name regardless of namespace if namespace is not specified": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
-      object.bind('click.server', handler)
-      object.bind('click.client', handler)
-      object.bind('click', handler)
-      object.trigger('click')
+      obj.bind('click.server', handler)
+      obj.bind('click.client', handler)
+      obj.bind('click', handler)
+      obj.trigger('click')
 
       assert.equal(invocations.length, 3)
 
-    # "namespaces does not have hierarchy": (object) ->
+    # "namespaces does not have hierarchy": (obj) ->
     #   invocations = []
     #   handler = -> invocations.push('trigger')
 
-    #   object.bind('click.server.client', handler)
-    #   object.bind('click.client.server', handler)
-    #   object.trigger('click.server.client')
+    #   obj.bind('click.server.client', handler)
+    #   obj.bind('click.client.server', handler)
+    #   obj.trigger('click.server.client')
 
     #   assert.equal(invocations.length, 3)
 

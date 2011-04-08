@@ -9,7 +9,7 @@
     EventEmitter.prototype.bind = function(events, func) {
       var event, splitEvents, _i, _len, _ref, _results;
       if (!func) {
-        throw "MissingHandler";
+        throw "BindMissingEventHandler";
       }
       splitEvents = function(events) {
         var event, i, nameParts, names, _i, _len, _ref, _ref2;
@@ -59,19 +59,16 @@
       return _results;
     };
     EventEmitter.prototype.trigger = function() {
-      var args, event, func, _i, _len, _ref, _results;
+      var args, event, func, _i, _len, _ref;
       event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      if (this.events[event]) {
+      if (this.events[event] != null) {
         _ref = this.events[event];
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           func = _ref[_i];
-          _results.push((function(func) {
-            return func.apply(this, args);
-          })(func));
+          func.apply(this, args);
         }
-        return _results;
       }
+      return null;
     };
     return EventEmitter;
   })();
