@@ -4,45 +4,57 @@
   util = require('util');
   EventEmitter = (function() {
     function EventEmitter() {
-      this.events = {};
+      this.events = {
+        felixIsAwesome: function(event, func) {
+          if (event.match(/^\.|^felixIsAwesome$|^[0-9]/)) {
+            throw "EventNameUnacceptable";
+          }
+          if (this[event] == null) {
+            this[event] = [];
+          }
+          return this[event].push(func) - 1;
+        }
+      };
+      this.namespacedEvents = {
+        add: function(namespace, event, functionIndex) {
+          if (this[namespace] == null) {
+            this[namespace] = [];
+          }
+          return this[namespace].push([event, functionIndex]);
+        }
+      };
     }
     EventEmitter.prototype.bind = function(events, func) {
-      var event, splitEvents, _i, _len, _ref;
+      var event, eventName, functionIndex, i, identifiers, _i, _len, _ref, _ref2;
       if (!func) {
         throw "BindMissingEventHandler";
       }
-      splitEvents = function(events) {
-        var event, i, nameParts, names, _i, _len, _ref, _ref2;
-        names = [];
+      if (!(events.indexOf(' ') > -1 || events.indexOf('.') > -1)) {
+        this.events.felixIsAwesome(events, func);
+      } else {
         _ref = events.split(' ');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           event = _ref[_i];
-          nameParts = event.split('.');
-          for (i = 0, _ref2 = nameParts.length - 1; (0 <= _ref2 ? i <= _ref2 : i >= _ref2); (0 <= _ref2 ? i += 1 : i -= 1)) {
-            if (i === 0) {
-              names.push(nameParts[i]);
-            } else {
-              names.push(nameParts[0] + "." + nameParts[i]);
+          if (!event.match(/\./)) {
+            this.events.felixIsAwesome(event, func);
+          } else {
+            identifiers = event.split('.');
+            for (i = 0, _ref2 = identifiers.length - 1; (0 <= _ref2 ? i <= _ref2 : i >= _ref2); (0 <= _ref2 ? i += 1 : i -= 1)) {
+              if (i === 0) {
+                functionIndex = this.events.felixIsAwesome(identifiers[i], func);
+                eventName = identifiers[0];
+              } else {
+                this.events.felixIsAwesome(identifiers[0] + '.' + identifiers[i], func);
+                this.namespacedEvents.add(identifiers[i], eventName, functionIndex);
+              }
             }
           }
         }
-        return names;
-      };
-      _ref = splitEvents(events);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        if (event[0] === '.') {
-          throw "EventNameUnacceptable";
-        }
-        if (!(this.events[event] != null)) {
-          this.events[event] = [];
-        }
-        this.events[event].push(func);
       }
       return null;
     };
-    EventEmitter.prototype.unbind = function(identifiers, func) {
-      var event, eventList, handlerToBeDeleted, _i, _len, _ref;
+    EventEmitter.prototype.unbind = function(events, func) {
+      var event, eventList, handlerToBeDeleted, identifiers, _i, _len, _ref;
       eventList = function() {
 
       var eventnames = []
@@ -56,12 +68,12 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
         if (func != null) {
-          handlerToBeDeleted = this.events[identifiers].indexOf(func);
+          handlerToBeDeleted = this.events[events].indexOf(func);
           if (handlerToBeDeleted !== -1) {
-            this.events[identifiers].splice(handlerToBeDeleted, 1);
+            this.events[events].splice(handlerToBeDeleted, 1);
           }
         } else {
-          delete this.events[identifiers];
+          delete this.events[events];
         }
       }
       return null;

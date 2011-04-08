@@ -2,33 +2,47 @@ util = require('util')
 
 class EventEmitter
   constructor: () ->
-    @events = {}
+
+    # felixIsAwesome is equivalent to push method
+    # I don't want to use push so that users can define an event
+    # called push without conflict with my internal method
+    @events = {
+      felixIsAwesome: (event, func) ->
+        throw "EventNameUnacceptable" if event.match(/^\.|^felixIsAwesome$|^[0-9]/)
+        this[event] = [] unless this[event]?
+        return this[event].push(func) - 1
+    }
+
+    # Needed to unbind events that are tied to namespace
+    # { client: [[click, 2], [click, 0], [explode, 3]] }
+    @namespacedEvents = {
+      add: (namespace, event, functionIndex) ->
+        this[namespace] = [] unless this[namespace]?
+        this[namespace].push [event, functionIndex]
+    }
 
   bind: (events, func) ->
     throw "BindMissingEventHandler" unless func
 
-    splitEvents = (events) ->
-      names = []
-
+    unless events.indexOf(' ') > -1 or events.indexOf('.') > -1
+      @events.felixIsAwesome events, func
+    else
       for event in events.split(' ')
-        nameParts = event.split('.')
-        for i in [0..nameParts.length-1]
-          if i is 0
-            names.push nameParts[i]
-          else
-            names.push nameParts[0] + "." + nameParts[i]
-
-      return names
-
-    for event in splitEvents(events)
-      throw "EventNameUnacceptable" if event[0] is '.'
-
-      @events[event] = [] if not @events[event]?
-      @events[event].push(func)
+        if not event.match(/\./)
+          @events.felixIsAwesome(event, func)
+        else
+          identifiers = event.split('.')
+          for i in [0..identifiers.length-1]
+            if i is 0
+              functionIndex = @events.felixIsAwesome(identifiers[i], func)
+              eventName = identifiers[0]
+            else
+              @events.felixIsAwesome identifiers[0] + '.' + identifiers[i], func
+              @namespacedEvents.add identifiers[i], eventName, functionIndex
 
     return null
 
-  unbind: (identifiers, func) ->
+  unbind: (events, func) ->
     eventList = ->
       `
       var eventnames = []
@@ -41,11 +55,11 @@ class EventEmitter
     identifiers = identifiers.split(' ')
     for event in eventList()
       if func?
-        handlerToBeDeleted = @events[identifiers].indexOf(func)
+        handlerToBeDeleted = @events[events].indexOf(func)
         if handlerToBeDeleted isnt -1
-          @events[identifiers].splice(handlerToBeDeleted, 1)
+          @events[events].splice(handlerToBeDeleted, 1)
       else
-        delete @events[identifiers]
+        delete @events[events]
 
     return null
 
