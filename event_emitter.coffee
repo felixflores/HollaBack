@@ -44,12 +44,22 @@ class EventEmitter
 
 
   trigger: (events, args...) ->
-    for event in events.split(' ')
-      throw 'IllegalTrigger' if event[0] is '.'
+    for _event in events.split(' ')
+      throw 'IllegalTrigger' if _event[0] is '.'
 
-      if @events[event]?
-        for func in @events[event]
-          func[0].apply(this, args)
+      eventsToBeTriggered = []
+
+      identifiers = _event.split('.')
+      if identifiers.length is 1
+        eventsToBeTriggered.push identifiers[0]
+      else
+        for i in [1..identifiers.length-1]
+          eventsToBeTriggered.push identifiers[0] + '.' + identifiers[i]
+
+      for eventToBeTriggered in eventsToBeTriggered
+        if @events[eventToBeTriggered]?
+          for func in @events[eventToBeTriggered]
+            func[0].apply(this, args)
 
     return null
 

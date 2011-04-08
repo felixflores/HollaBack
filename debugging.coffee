@@ -9,7 +9,7 @@ invocations = []
 funcA = -> invocations.push('trigger')
 obj.bind 'click.world.server.hi', funcA
 obj.bind 'click.world', funcA
-obj.trigger 'click'
+obj.trigger 'click.world.server'
 
 console.log('\n')
 console.log util.inspect(obj.events)

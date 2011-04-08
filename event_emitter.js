@@ -47,19 +47,31 @@
       return null;
     };
     EventEmitter.prototype.trigger = function() {
-      var args, event, events, func, _i, _j, _len, _len2, _ref, _ref2;
+      var args, eventToBeTriggered, events, eventsToBeTriggered, func, i, identifiers, _event, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
       events = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       _ref = events.split(' ');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        if (event[0] === '.') {
+        _event = _ref[_i];
+        if (_event[0] === '.') {
           throw 'IllegalTrigger';
         }
-        if (this.events[event] != null) {
-          _ref2 = this.events[event];
-          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-            func = _ref2[_j];
-            func[0].apply(this, args);
+        eventsToBeTriggered = [];
+        identifiers = _event.split('.');
+        if (identifiers.length === 1) {
+          eventsToBeTriggered.push(identifiers[0]);
+        } else {
+          for (i = 1, _ref2 = identifiers.length - 1; (1 <= _ref2 ? i <= _ref2 : i >= _ref2); (1 <= _ref2 ? i += 1 : i -= 1)) {
+            eventsToBeTriggered.push(identifiers[0] + '.' + identifiers[i]);
+          }
+        }
+        for (_j = 0, _len2 = eventsToBeTriggered.length; _j < _len2; _j++) {
+          eventToBeTriggered = eventsToBeTriggered[_j];
+          if (this.events[eventToBeTriggered] != null) {
+            _ref3 = this.events[eventToBeTriggered];
+            for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+              func = _ref3[_k];
+              func[0].apply(this, args);
+            }
           }
         }
       }
