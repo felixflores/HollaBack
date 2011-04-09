@@ -1,12 +1,12 @@
 (function() {
-  var EventEmitter, util;
+  var HollaBack, util;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   util = require('util');
-  EventEmitter = (function() {
-    function EventEmitter() {
+  HollaBack = (function() {
+    function HollaBack() {
       this.events = {};
     }
-    EventEmitter.prototype.bind = function(events, func) {
+    HollaBack.prototype.bind = function(events, func) {
       var addEvent, eventName, functionNameSpaceSet, i, identifiers, _event, _i, _len, _ref, _ref2;
       if (!func) {
         throw "BindMissingEventHandler";
@@ -38,7 +38,7 @@
       }
       return null;
     };
-    EventEmitter.prototype.unbind = function(events, func) {
+    HollaBack.prototype.unbind = function(events, func) {
       var eventList, eventName, eventNames, i, identifiers, matchFunction, matchNamespace, name, namespacedFunc, namespaces, _event, _i, _j, _len, _len2, _ref, _ref2;
       eventList = __bind(function() {
 
@@ -86,7 +86,7 @@
       }
       return null;
     };
-    EventEmitter.prototype.trigger = function() {
+    HollaBack.prototype.trigger = function() {
       var args, eventName, funcNamespace, identifiers, namespaces, _event, _i, _len, _ref;
       _event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (_event[0] === '.' || _event.indexOf(' ') > -1) {
@@ -106,7 +106,7 @@
       }
       return null;
     };
-    EventEmitter.prototype.functionInNamepspace = function(namespacedFunction, userNamespaces) {
+    HollaBack.prototype.functionInNamepspace = function(namespacedFunction, userNamespaces) {
       var i, inNameSpace;
       if (userNamespaces.length === 0) {
         return true;
@@ -119,11 +119,11 @@
       }
       return inNameSpace;
     };
-    return EventEmitter;
+    return HollaBack;
   })();
   if (typeof window != "undefined" && window !== null) {
-    window.EventEmitter = EventEmitter;
+    window.HollaBack = HollaBack;
   } else {
-    module.exports = EventEmitter;
+    module.exports = HollaBack;
   }
 }).call(this);

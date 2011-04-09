@@ -1,6 +1,6 @@
 util = require('util')
 
-class EventEmitter
+class HollaBack
   constructor: () ->
 
     @events = {
@@ -107,6 +107,6 @@ class EventEmitter
 
 
 if window?
-  window.EventEmitter = EventEmitter
+  window.HollaBack = HollaBack
 else
-  module.exports = EventEmitter
+  module.exports = HollaBack

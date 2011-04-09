@@ -1,4 +1,6 @@
-class ClientEmitter extends EventEmitter
+HollaBack = require('./holla_back')
+
+class ClientEmitter extends HollaBack
   constructor: (io) ->
     @socket = new io.Socket()
     @socket.connect()

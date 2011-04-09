@@ -1,4 +1,6 @@
-class ServerEmitter extends EventEmitter
+HollaBack = require('./holla_back')
+
+class ServerEmitter extends HollaBack
   constructor: (io, server) ->
     @socket = new io.listen(server)
 
@@ -13,4 +15,4 @@ class ServerEmitter extends EventEmitter
     @socket.send { trigger: event, args: args }
     super
 
-exports.ServerEmitter = ServerEmitter
+exports.HollaBack = HollaBack

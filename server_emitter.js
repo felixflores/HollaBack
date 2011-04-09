@@ -1,5 +1,5 @@
 (function() {
-  var ServerEmitter;
+  var HollaBack, ServerEmitter;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -8,8 +8,9 @@
     child.__super__ = parent.prototype;
     return child;
   }, __slice = Array.prototype.slice;
+  HollaBack = require('./holla_back');
   ServerEmitter = (function() {
-    __extends(ServerEmitter, EventEmitter);
+    __extends(ServerEmitter, HollaBack);
     function ServerEmitter(io, server) {
       this.trigger = __bind(this.trigger, this);;      this.socket = new io.listen(server);
       this.socket.on('connection', __bind(function(client) {
@@ -31,5 +32,5 @@
     };
     return ServerEmitter;
   })();
-  exports.ServerEmitter = ServerEmitter;
+  exports.HollaBack = HollaBack;
 }).call(this);

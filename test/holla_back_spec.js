@@ -1,11 +1,11 @@
 (function() {
-  var EventEmitter, assert, vows;
+  var HollaBack, assert, vows;
   vows = require('vows');
   assert = require('assert');
-  EventEmitter = require('../event_emitter.js');
+  HollaBack = require('../holla_back.js');
   vows.describe('EventEmitter').addBatch({
     'Binding events': {
-      topic: new EventEmitter,
+      topic: new HollaBack,
       "throws an exception if the event handler is missing": function(obj) {
         var erroneousBinding;
         erroneousBinding = function() {
@@ -33,7 +33,7 @@
       }
     },
     'Simple triggers': {
-      topic: new EventEmitter,
+      topic: new HollaBack,
       "can be triggered": function(obj) {
         var invocations;
         invocations = [];
@@ -48,7 +48,7 @@
       }
     },
     'Simple unbinding': {
-      topic: new EventEmitter,
+      topic: new HollaBack,
       "unbind a single event": function(obj) {
         var handler, invocations;
         invocations = [];
@@ -75,7 +75,7 @@
       }
     },
     'Namespacing': {
-      topic: new EventEmitter,
+      topic: new HollaBack,
       "can be namespaced": function(obj) {
         var invocations;
         invocations = [];
@@ -124,6 +124,17 @@
         obj.bind('click', handler);
         obj.trigger('click');
         return assert.equal(invocations.length, 3);
+      },
+      "namespaces does not have hierarchy": function(obj) {
+        var handler, invocations;
+        invocations = [];
+        handler = function() {
+          return invocations.push('trigger');
+        };
+        obj.bind('click.server.client', handler);
+        obj.bind('click.client.server', handler);
+        obj.trigger('click.server.client');
+        return assert.equal(invocations.length, 2);
       }
     }
   })["export"](module);

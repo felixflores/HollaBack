@@ -1,12 +1,12 @@
 vows = require('vows')
 assert = require('assert')
 
-EventEmitter = require('../event_emitter.js')
+HollaBack = require('../holla_back.js')
 
 
 vows.describe('EventEmitter').addBatch({
   'Binding events':
-    topic: new EventEmitter
+    topic: new HollaBack
 
     "throws an exception if the event handler is missing": (obj) ->
       erroneousBinding = -> obj.bind('click')
@@ -22,7 +22,7 @@ vows.describe('EventEmitter').addBatch({
 
 
   'Simple triggers':
-    topic: new EventEmitter
+    topic: new HollaBack
 
     "can be triggered": (obj) ->
       invocations = []
@@ -35,7 +35,7 @@ vows.describe('EventEmitter').addBatch({
       assert.equal obj.trigger('does-not-exists'), null
 
   'Simple unbinding':
-    topic: new EventEmitter
+    topic: new HollaBack
 
     "unbind a single event": (obj) ->
       invocations = []
@@ -61,7 +61,7 @@ vows.describe('EventEmitter').addBatch({
       assert.equal invocations.length, 0
 
   'Namespacing':
-    topic: new EventEmitter
+    topic: new HollaBack
 
     "can be namespaced": (obj) ->
       invocations = []
@@ -103,15 +103,15 @@ vows.describe('EventEmitter').addBatch({
 
       assert.equal(invocations.length, 3)
 
-    # "namespaces does not have hierarchy": (obj) ->
-    #   invocations = []
-    #   handler = -> invocations.push('trigger')
+    "namespaces does not have hierarchy": (obj) ->
+      invocations = []
+      handler = -> invocations.push('trigger')
 
-    #   obj.bind('click.server.client', handler)
-    #   obj.bind('click.client.server', handler)
-    #   obj.trigger('click.server.client')
+      obj.bind('click.server.client', handler)
+      obj.bind('click.client.server', handler)
+      obj.trigger('click.server.client')
 
-    #   assert.equal(invocations.length, 3)
+      assert.equal(invocations.length, 2)
 
 
 }).export(module)
