@@ -1,7 +1,6 @@
 (function() {
-  var HollaBack, util;
+  var HollaBack;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
-  util = require('util');
   HollaBack = (function() {
     function HollaBack() {
       this.events = {};
