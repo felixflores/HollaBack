@@ -107,7 +107,7 @@
     };
     HollaBack.prototype.functionInNamepspace = function(namespacedFunction, userNamespaces) {
       var i, inNameSpace;
-      if (userNamespaces.length === 0) {
+      if (userNamespaces.length === 0 || namespacedFunction.length === 1) {
         return true;
       }
       i = 0;

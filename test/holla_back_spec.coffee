@@ -111,7 +111,7 @@ vows.describe('EventEmitter').addBatch({
 
       assert.equal invocations.length, 1
 
-    "triggers only namespaced events and ignores listeners outside the namespace": (obj) ->
+    "triggers only namespaced events and generically bound events if a namespaced event is triggered": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
@@ -119,7 +119,7 @@ vows.describe('EventEmitter').addBatch({
       obj.bind('change', handler)
       obj.trigger('change.server')
 
-      assert.equal(invocations.length, 1)
+      assert.equal(invocations.length, 2)
 
     "triggers all events with the same event name regardless of namespace if namespace is not specified": (obj) ->
       invocations = []

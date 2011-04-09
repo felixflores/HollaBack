@@ -95,7 +95,7 @@ class HollaBack
     return null
 
   functionInNamepspace: (namespacedFunction, userNamespaces) ->
-    return true if userNamespaces.length is 0
+    return true if userNamespaces.length is 0 or namespacedFunction.length is 1
 
     i = 0
     inNameSpace = false
