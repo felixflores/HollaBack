@@ -21,6 +21,7 @@ vows.describe('EventEmitter').addBatch({
       assert.throws erroneousBinding, "EventNameUnacceptable"
 
 
+
   'Simple triggers':
     topic: new HollaBack
 
@@ -34,10 +35,11 @@ vows.describe('EventEmitter').addBatch({
     "does nothing if an event is triggered with no event listeners": (obj) ->
       assert.equal obj.trigger('does-not-exists'), null
 
+
   'Simple unbinding':
     topic: new HollaBack
 
-    "unbind a single event": (obj) ->
+    "a single event": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
@@ -47,7 +49,7 @@ vows.describe('EventEmitter').addBatch({
 
       assert.equal invocations.length, 0
 
-    "unbiding a namespace": (obj) ->
+    "a namespace": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
@@ -59,6 +61,31 @@ vows.describe('EventEmitter').addBatch({
       obj.trigger('explode')
 
       assert.equal invocations.length, 0
+
+    "a handler or an event": (obj) ->
+      invocations = []
+      handler = -> invocations.push('trigger')
+
+      obj.bind 'click', handler
+      obj.bind 'click', -> invocations.push('awesome')
+      obj.unbind 'click', handler
+      obj.trigger('click')
+
+      assert.equal invocations[0], 'awesome'
+
+    "a handler in a namespace": (obj) ->
+      invocations = []
+      handler = -> invocations.push('trigger')
+
+      obj.bind 'click.world.hello', handler
+      obj.bind 'explode.world', handler
+      obj.bind 'click.world', -> invocations.push('awesome')
+      obj.unbind '.world', handler
+      obj.trigger('click')
+
+      assert.equal invocations[0], 'awesome'
+
+
 
   'Namespacing':
     topic: new HollaBack
