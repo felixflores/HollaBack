@@ -6,10 +6,14 @@ obj = new EventEmitter
 
 invocations = []
 
-funcA = -> invocations.push('trigger')
-obj.bind 'click.world.server.hi', funcA
+funcA = -> invocations.push('trigger_a')
+funcB = -> invocations.push('trigger_b')
+obj.bind 'explode.world', funcA
 obj.bind 'click.world', funcA
-obj.trigger 'click.world.server'
+obj.bind 'click', funcB
+
+obj.unbind '.world'
+obj.trigger 'click'
 
 console.log('\n')
 console.log util.inspect(obj.events)

@@ -8,13 +8,13 @@ class EventEmitter
 
 
   bind: (events, func) ->
+    throw "BindMissingEventHandler" unless func
+
     addEvent = (label, functionNameSpaceSet) =>
       @events[label] = [] unless @events[label]?
       @events[label].push(functionNameSpaceSet)
 
       return null
-
-    throw "BindMissingEventHandler" unless func
 
     for _event in events.split(' ')
       identifiers = _event.split('.')
@@ -22,7 +22,7 @@ class EventEmitter
       functionNameSpaceSet = [func]
 
       for i in [0..identifiers.length-1]
-        throw "EventNameUnacceptable" if identifiers[i].match(/^\.|^add$|^remove$|^[0-9]|^$/)
+        throw "EventNameUnacceptable" if identifiers[i].match(/^\.|^[0-9]|^$/)
 
         if i is 0
           eventName = identifiers[i]
@@ -31,37 +31,79 @@ class EventEmitter
 
       addEvent(eventName, functionNameSpaceSet)
 
-      if functionNameSpaceSet.length > 1
-        for i in [1..functionNameSpaceSet.length-1]
-          addEvent(eventName + '.' + functionNameSpaceSet[i], [func])
-
     return null
 
 
   unbind: (events, func) ->
+    eventList = =>
+      `
+      var eventnames = []
+      for(eventname in this.events) {
+        eventnames.push(eventname);
+      }
+      `
+      return eventnames
 
-    return null
-
-
-  trigger: (events, args...) ->
     for _event in events.split(' ')
-      throw 'IllegalTrigger' if _event[0] is '.'
-
-      eventsToBeTriggered = []
-
-      identifiers = _event.split('.')
-      if identifiers.length is 1
-        eventsToBeTriggered.push identifiers[0]
+      if _event[0] is '.'
+        namespaces = _event.split('.')
+        namespaces.shift()
+        eventName = ''
       else
-        for i in [1..identifiers.length-1]
-          eventsToBeTriggered.push identifiers[0] + '.' + identifiers[i]
+        identifiers = _event.split('.')
+        eventName = identifiers.shift()
+        namespaces = identifiers
 
-      for eventToBeTriggered in eventsToBeTriggered
-        if @events[eventToBeTriggered]?
-          for func in @events[eventToBeTriggered]
-            func[0].apply(this, args)
+
+      if eventName isnt '' and not func? and namespaces.length is 0
+        delete @events[eventName]
+      else
+        eventNames = if eventName is '' then eventList() else [eventName]
+
+        for name in eventNames
+          for i in [0..@events[name].length-1]
+            namespacedFunc = @events[name].shift()
+
+            matchNamespace = @functionInNamepspace(namespacedFunc, namespaces)
+
+            if func?
+              matchFunction = namespacedFunc[0] is func
+            else
+              matchFunction = true
+
+            @events[name].push(namespacedFunc) unless matchNamespace and matchFunction
+
+          delete @events[name] if @events[name].length is 0
 
     return null
+
+
+  trigger: (_event, args...) ->
+    throw 'IllegalTrigger' if _event[0] is '.' or _event.indexOf(' ') > -1
+
+
+    identifiers = _event.split('.')
+    eventName = identifiers[0]
+    namespaces = identifiers[1..identifiers.length-1]
+
+    if @events[eventName]?
+      for funcNamespace in @events[eventName]
+        if @functionInNamepspace(funcNamespace, namespaces)
+          funcNamespace[0].apply(this, args)
+
+    return null
+
+  functionInNamepspace: (namespacedFunction, userNamespaces) ->
+    return true if userNamespaces.length is 0
+
+    i = 0
+    inNameSpace = false
+
+    while i < namespacedFunction.length and not inNameSpace
+      inNameSpace = namespacedFunction.indexOf(userNamespaces[i]) > -1
+      i++
+
+    return inNameSpace
 
 
 if window?

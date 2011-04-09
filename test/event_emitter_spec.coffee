@@ -16,10 +16,6 @@ vows.describe('EventEmitter').addBatch({
       erroneousBinding = -> obj.bind('.event', -> 1)
       assert.throws erroneousBinding, "EventNameUnacceptable"
 
-    "throws an exception if event name is felixIsAwesome": (obj) ->
-      erroneousBinding = -> obj.bind('felixIsAwesome', -> 1)
-      assert.throws erroneousBinding, "EventNameUnacceptable"
-
     "throws an exception if event name begins with a number": (obj) ->
       erroneousBinding = -> obj.bind('123click', -> 1)
       assert.throws erroneousBinding, "EventNameUnacceptable"
@@ -49,7 +45,7 @@ vows.describe('EventEmitter').addBatch({
       obj.unbind('click')
       obj.trigger('click')
 
-      assert.equal invocations.length, 1
+      assert.equal invocations.length, 0
 
     "unbiding a namespace": (obj) ->
       invocations = []
@@ -58,9 +54,6 @@ vows.describe('EventEmitter').addBatch({
       obj.bind('click.client', handler)
       obj.bind('explode.client', handler)
       obj.unbind('.client', handler)
-
-
-      console.log util.inspect(obj.events)
 
       obj.trigger('click')
       obj.trigger('explode')

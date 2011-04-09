@@ -22,15 +22,6 @@
         };
         return assert.throws(erroneousBinding, "EventNameUnacceptable");
       },
-      "throws an exception if event name is felixIsAwesome": function(obj) {
-        var erroneousBinding;
-        erroneousBinding = function() {
-          return obj.bind('felixIsAwesome', function() {
-            return 1;
-          });
-        };
-        return assert.throws(erroneousBinding, "EventNameUnacceptable");
-      },
       "throws an exception if event name begins with a number": function(obj) {
         var erroneousBinding;
         erroneousBinding = function() {
@@ -67,7 +58,7 @@
         obj.bind('click', handler);
         obj.unbind('click');
         obj.trigger('click');
-        return assert.equal(invocations.length, 1);
+        return assert.equal(invocations.length, 0);
       },
       "unbiding a namespace": function(obj) {
         var handler, invocations;
@@ -78,7 +69,6 @@
         obj.bind('click.client', handler);
         obj.bind('explode.client', handler);
         obj.unbind('.client', handler);
-        console.log(util.inspect(obj.events));
         obj.trigger('click');
         obj.trigger('explode');
         return assert.equal(invocations.length, 0);
