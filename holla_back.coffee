@@ -80,7 +80,8 @@ class HollaBack
 
 
   trigger: (_event, args...) ->
-    throw 'IllegalTrigger' if _event[0] is '.' or _event.indexOf(' ') > -1
+    if _event?
+      throw 'IllegalTrigger' if _event[0] is '.' or _event.indexOf(' ') > -1
 
 
     identifiers = _event.split('.')

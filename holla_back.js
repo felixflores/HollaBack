@@ -88,8 +88,10 @@
     HollaBack.prototype.trigger = function() {
       var args, eventName, funcNamespace, identifiers, namespaces, _event, _i, _len, _ref;
       _event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      if (_event[0] === '.' || _event.indexOf(' ') > -1) {
-        throw 'IllegalTrigger';
+      if (_event != null) {
+        if (_event[0] === '.' || _event.indexOf(' ') > -1) {
+          throw 'IllegalTrigger';
+        }
       }
       identifiers = _event.split('.');
       eventName = identifiers[0];
