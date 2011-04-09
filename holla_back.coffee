@@ -1,3 +1,6 @@
+# HollaBack - Any object that extends HollaBack can serve as an event emitter
+# Felix Flores 2011 v0.1.0
+
 util = require('util')
 
 class HollaBack
