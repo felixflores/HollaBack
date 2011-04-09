@@ -9,7 +9,7 @@ vows.describe('EventEmitter').addBatch({
     topic: new HollaBack
 
     "throws an exception if the event handler is missing": (obj) ->
-      erroneousBinding = -> obj.bind('click')
+      erroneousBinding = -> obj.bind('change')
       assert.throws erroneousBinding, "BindMissingEventHandler"
 
     "throws an exception if event name contains a dot (.)": (obj) ->
@@ -17,7 +17,7 @@ vows.describe('EventEmitter').addBatch({
       assert.throws erroneousBinding, "EventNameUnacceptable"
 
     "throws an exception if event name begins with a number": (obj) ->
-      erroneousBinding = -> obj.bind('123click', -> 1)
+      erroneousBinding = -> obj.bind('123change', -> 1)
       assert.throws erroneousBinding, "EventNameUnacceptable"
 
 
@@ -27,13 +27,14 @@ vows.describe('EventEmitter').addBatch({
 
     "can be triggered": (obj) ->
       invocations = []
-      obj.bind 'click', -> invocations.push("trigger")
-      obj.trigger('click')
+      obj.bind 'change', -> invocations.push("trigger")
+      obj.trigger('change')
 
       assert.equal invocations.length, 1
 
     "does nothing if an event is triggered with no event listeners": (obj) ->
       assert.equal obj.trigger('does-not-exists'), null
+
 
 
   'Simple unbinding':
@@ -43,9 +44,9 @@ vows.describe('EventEmitter').addBatch({
       invocations = []
       handler = -> invocations.push('trigger')
 
-      obj.bind('click', handler)
-      obj.unbind('click')
-      obj.trigger('click')
+      obj.bind('change', handler)
+      obj.unbind('change')
+      obj.trigger('change')
 
       assert.equal invocations.length, 0
 
@@ -53,48 +54,60 @@ vows.describe('EventEmitter').addBatch({
       invocations = []
       handler = -> invocations.push('trigger')
 
-      obj.bind('click.client', handler)
+      obj.bind('change.client', handler)
       obj.bind('explode.client', handler)
       obj.unbind('.client', handler)
 
-      obj.trigger('click')
+      obj.trigger('change')
       obj.trigger('explode')
 
       assert.equal invocations.length, 0
 
-    "a handler or an event": (obj) ->
+    "a handler of an event": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
-      obj.bind 'click', handler
-      obj.bind 'click', -> invocations.push('awesome')
-      obj.unbind 'click', handler
-      obj.trigger('click')
+      obj.bind 'change', handler
+      obj.bind 'change', -> invocations.push('awesome')
+      obj.unbind 'change', handler
+      obj.trigger('change')
 
       assert.equal invocations[0], 'awesome'
 
-    "a handler in a namespace": (obj) ->
+    "a handler of a namespace": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
-      obj.bind 'click.world.hello', handler
-      obj.bind 'explode.world', handler
-      obj.bind 'click.world', -> invocations.push('awesome')
+      obj.bind 'change.world.hello', handler
+      obj.bind 'change.world', handler
+      obj.bind 'change.world', -> invocations.push('awesome')
       obj.unbind '.world', handler
-      obj.trigger('click')
+      obj.trigger('change')
 
       assert.equal invocations[0], 'awesome'
 
+  'Multi Namespaced Unbinding':
+    topic: new HollaBack
+
+    "unbinds an event if it matches a namespace": (obj) ->
+      invocations = []
+      handler = -> invocations.push('trigger')
+
+      obj.bind 'change.the.world', handler
+      obj.unbind '.the', handler
+      obj.trigger 'change'
+
+      assert.equal invocations.length, 0
 
 
-  'Namespacing':
+
+  'Simple Namespacing':
     topic: new HollaBack
 
     "can be namespaced": (obj) ->
       invocations = []
-      obj.bind('click.server', -> return "Hello")
-      obj.bind 'click.server', -> invocations.push("trigger")
-      obj.trigger('click.server')
+      obj.bind 'change.server', -> invocations.push("trigger")
+      obj.trigger('change.server')
 
       assert.equal invocations.length, 1
 
@@ -102,9 +115,9 @@ vows.describe('EventEmitter').addBatch({
       invocations = []
       handler = -> invocations.push('trigger')
 
-      obj.bind('click.server', handler)
-      obj.bind('click', handler)
-      obj.trigger('click.server')
+      obj.bind('change.server', handler)
+      obj.bind('change', handler)
+      obj.trigger('change.server')
 
       assert.equal(invocations.length, 1)
 
@@ -112,33 +125,26 @@ vows.describe('EventEmitter').addBatch({
       invocations = []
       handler = -> invocations.push('trigger')
 
-      obj.bind('click.server', handler)
-      obj.bind('click.client', handler)
-      obj.bind('click', -> handler)
-      obj.trigger('click')
+      obj.bind('change.server', handler)
+      obj.bind('change.client', handler)
+      obj.bind('change', handler)
+      obj.trigger('change')
 
       assert.equal(invocations.length, 3)
 
-    "triggers all events with the same event name regardless of namespace if namespace is not specified": (obj) ->
-      invocations = []
-      handler = -> invocations.push('trigger')
 
-      obj.bind('click.server', handler)
-      obj.bind('click.client', handler)
-      obj.bind('click', handler)
-      obj.trigger('click')
 
-      assert.equal(invocations.length, 3)
+  'Multi Namespaced Trigger':
+    topic: new HollaBack
 
     "namespaces does not have hierarchy": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
-      obj.bind('click.server.client', handler)
-      obj.bind('click.client.server', handler)
-      obj.trigger('click.server.client')
+      obj.bind('change.server.client', handler)
+      obj.bind('change.client.server', handler)
+      obj.trigger('change.server.client')
 
       assert.equal(invocations.length, 2)
-
 
 }).export(module)
