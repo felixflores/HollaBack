@@ -137,7 +137,7 @@ vows.describe('EventEmitter').addBatch({
   'Multi Namespaced Trigger':
     topic: new HollaBack
 
-    "namespaces does not have hierarchy": (obj) ->
+    "does not have hierarchy": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
 
@@ -146,5 +146,16 @@ vows.describe('EventEmitter').addBatch({
       obj.trigger('change.server.client')
 
       assert.equal(invocations.length, 2)
+
+    "must match all trigger namespaces in order to be triggered": (obj) ->
+      invocations = []
+      handler = -> invocations.push('trigger')
+
+      obj.bind('change.server.client', handler)
+      obj.bind('change.client', handler)
+      obj.trigger('change.server.client')
+
+      assert.equal(invocations.length, 1)
+
 
 }).export(module)

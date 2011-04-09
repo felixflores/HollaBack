@@ -65,7 +65,7 @@ class HollaBack
           for i in [0..@events[name].length-1]
             namespacedFunc = @events[name].shift()
 
-            matchNamespace = @functionInNamepspace(namespacedFunc, namespaces)
+            matchNamespace = this.functionInNamepspace(namespacedFunc, namespaces)
 
             if func?
               matchFunction = namespacedFunc[0] is func
@@ -90,20 +90,23 @@ class HollaBack
 
     if @events[eventName]?
       for funcNamespace in @events[eventName]
-        if @functionInNamepspace(funcNamespace, namespaces)
+        if this.functionInNamepspace(funcNamespace, namespaces, true)
           funcNamespace[0].apply(this, args)
 
     return null
 
-  functionInNamepspace: (namespacedFunction, userNamespaces) ->
+  functionInNamepspace: (namespacedFunction, userNamespaces, exclusive) ->
     return true if userNamespaces.length is 0 or namespacedFunction.length is 1
 
     i = 0
-    inNameSpace = false
+    inNameSpace = true
 
-    while i < namespacedFunction.length and not inNameSpace
+    while i < userNamespaces.length
       inNameSpace = namespacedFunction.indexOf(userNamespaces[i]) > -1
-      i++
+      if exclusive and not inNameSpace
+        i = userNamespaces.length
+      else
+        i++
 
     return inNameSpace
 

@@ -100,23 +100,27 @@
         _ref = this.events[eventName];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           funcNamespace = _ref[_i];
-          if (this.functionInNamepspace(funcNamespace, namespaces)) {
+          if (this.functionInNamepspace(funcNamespace, namespaces, true)) {
             funcNamespace[0].apply(this, args);
           }
         }
       }
       return null;
     };
-    HollaBack.prototype.functionInNamepspace = function(namespacedFunction, userNamespaces) {
+    HollaBack.prototype.functionInNamepspace = function(namespacedFunction, userNamespaces, exclusive) {
       var i, inNameSpace;
       if (userNamespaces.length === 0 || namespacedFunction.length === 1) {
         return true;
       }
       i = 0;
-      inNameSpace = false;
-      while (i < namespacedFunction.length && !inNameSpace) {
+      inNameSpace = true;
+      while (i < userNamespaces.length) {
         inNameSpace = namespacedFunction.indexOf(userNamespaces[i]) > -1;
-        i++;
+        if (exclusive && !inNameSpace) {
+          i = userNamespaces.length;
+        } else {
+          i++;
+        }
       }
       return inNameSpace;
     };

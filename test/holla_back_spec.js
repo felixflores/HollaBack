@@ -154,7 +154,7 @@
     },
     'Multi Namespaced Trigger': {
       topic: new HollaBack,
-      "namespaces does not have hierarchy": function(obj) {
+      "does not have hierarchy": function(obj) {
         var handler, invocations;
         invocations = [];
         handler = function() {
@@ -164,6 +164,17 @@
         obj.bind('change.client.server', handler);
         obj.trigger('change.server.client');
         return assert.equal(invocations.length, 2);
+      },
+      "must match all trigger namespaces in order to be triggered": function(obj) {
+        var handler, invocations;
+        invocations = [];
+        handler = function() {
+          return invocations.push('trigger');
+        };
+        obj.bind('change.server.client', handler);
+        obj.bind('change.client', handler);
+        obj.trigger('change.server.client');
+        return assert.equal(invocations.length, 1);
       }
     }
   })["export"](module);
