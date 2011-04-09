@@ -1,6 +1,7 @@
 (function() {
-  var HollaBack;
+  var HollaBack, util;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  util = require('util');
   HollaBack = (function() {
     function HollaBack() {
       this.events = {};
@@ -107,22 +108,31 @@
       }
       return null;
     };
-    HollaBack.prototype.functionInNamepspace = function(namespacedFunction, userNamespaces, exclusive) {
-      var i, inNameSpace;
-      if (userNamespaces.length === 0 || namespacedFunction.length === 1) {
+    HollaBack.prototype.functionInNamepspace = function(listenerFunction, namespaces, strict) {
+      var i, isInNameSpace;
+      if (namespaces.length === 0 || listenerFunction.length === 1) {
         return true;
       }
-      i = 0;
-      inNameSpace = true;
-      while (i < userNamespaces.length) {
-        inNameSpace = namespacedFunction.indexOf(userNamespaces[i]) > -1;
-        if (exclusive && !inNameSpace) {
-          i = userNamespaces.length;
-        } else {
+      if (strict) {
+        i = 1;
+        isInNameSpace = true;
+        while (i < listenerFunction.length) {
+          isInNameSpace = namespaces.indexOf(listenerFunction[i]) > -1;
+          if (isInNameSpace) {
+            i++;
+          } else {
+            i = listenerFunction.length;
+          }
+        }
+      } else {
+        i = 0;
+        isInNameSpace = false;
+        while (i < namespaces.length && !isInNameSpace) {
+          isInNameSpace = listenerFunction.indexOf(namespaces[i]) > -1;
           i++;
         }
       }
-      return inNameSpace;
+      return isInNameSpace;
     };
     return HollaBack;
   })();

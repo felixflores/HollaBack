@@ -1,22 +1,16 @@
 util = require('util')
 
-EventEmitter = require('./event_emitter.js')
+EventEmitter = require('./holla_back.js')
 
 obj = new EventEmitter
 
 invocations = []
 
-funcA = -> invocations.push('trigger_a')
-funcB = -> invocations.push('trigger_b')
-obj.bind 'explode.world', funcA
-obj.bind 'click.world', funcA
-obj.bind 'click', funcB
+handler = -> invocations.push('trigger')
 
-obj.unbind '.world'
-obj.trigger 'click'
+obj.bind('change.client', handler)
+obj.bind('explode.client', handler)
+obj.unbind('.client', handler)
 
 console.log('\n')
 console.log util.inspect(obj.events)
-console.log('\n')
-console.log util.inspect(invocations)
-console.log('\n')

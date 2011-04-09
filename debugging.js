@@ -1,23 +1,15 @@
 (function() {
-  var EventEmitter, funcA, funcB, invocations, obj, util;
+  var EventEmitter, handler, invocations, obj, util;
   util = require('util');
-  EventEmitter = require('./event_emitter.js');
+  EventEmitter = require('./holla_back.js');
   obj = new EventEmitter;
   invocations = [];
-  funcA = function() {
-    return invocations.push('trigger_a');
+  handler = function() {
+    return invocations.push('trigger');
   };
-  funcB = function() {
-    return invocations.push('trigger_b');
-  };
-  obj.bind('explode.world', funcA);
-  obj.bind('click.world', funcA);
-  obj.bind('click', funcB);
-  obj.unbind('.world');
-  obj.trigger('click');
+  obj.bind('change.client', handler);
+  obj.bind('explode.client', handler);
+  obj.unbind('.client', handler);
   console.log('\n');
   console.log(util.inspect(obj.events));
-  console.log('\n');
-  console.log(util.inspect(invocations));
-  console.log('\n');
 }).call(this);

@@ -85,7 +85,7 @@
         });
         obj.unbind('change', handler);
         obj.trigger('change');
-        return assert.equal(invocations[0], 'awesome');
+        return assert.notEqual(invocations.indexOf('awesome'), -1);
       },
       "a handler of a namespace": function(obj) {
         var handler, invocations;
@@ -100,7 +100,7 @@
         });
         obj.unbind('.world', handler);
         obj.trigger('change');
-        return assert.equal(invocations[0], 'awesome');
+        return assert.notEqual(invocations.indexOf('awesome'), -1);
       }
     },
     'Multi Namespaced Unbinding': {
@@ -166,15 +166,25 @@
         return assert.equal(invocations.length, 2);
       },
       "must match all trigger namespaces in order to be triggered": function(obj) {
-        var handler, invocations;
+        var invocations;
         invocations = [];
-        handler = function() {
-          return invocations.push('trigger');
-        };
-        obj.bind('change.server.client', handler);
-        obj.bind('change.client', handler);
-        obj.trigger('change.server.client');
-        return assert.equal(invocations.length, 1);
+        obj.bind('change.server.random', function() {
+          return invocations.push('trigger_a');
+        });
+        obj.bind('change.server.client', function() {
+          return invocations.push('trigger_b');
+        });
+        obj.bind('change.client.server', function() {
+          return invocations.push('trigger_c');
+        });
+        obj.bind('change.client', function() {
+          return invocations.push('trigger_d');
+        });
+        obj.trigger('change.client.server');
+        assert.equal(invocations.indexOf('trigger_a'), -1);
+        assert.notEqual(invocations.indexOf('trigger_b'), -1);
+        assert.notEqual(invocations.indexOf('trigger_c'), -1);
+        return assert.notEqual(invocations.indexOf('trigger_d'), -1);
       }
     }
   })["export"](module);

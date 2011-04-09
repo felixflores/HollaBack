@@ -1,3 +1,5 @@
+util = require('util')
+
 # HollaBack - Any object that extends HollaBack can serve as an event emitter
 # Felix Flores 2011 v0.1.0
 
@@ -94,20 +96,28 @@ class HollaBack
 
     return null
 
-  functionInNamepspace: (namespacedFunction, userNamespaces, exclusive) ->
-    return true if userNamespaces.length is 0 or namespacedFunction.length is 1
+  functionInNamepspace: (listenerFunction, namespaces, strict) ->
+    return true if namespaces.length is 0 or listenerFunction.length is 1
 
-    i = 0
-    inNameSpace = true
+    if strict
+      i = 1
+      isInNameSpace = true
+      while i < listenerFunction.length
+        isInNameSpace = namespaces.indexOf(listenerFunction[i]) > -1
 
-    while i < userNamespaces.length
-      inNameSpace = namespacedFunction.indexOf(userNamespaces[i]) > -1
-      if exclusive and not inNameSpace
-        i = userNamespaces.length
-      else
+        if isInNameSpace
+          i++
+        else
+          i = listenerFunction.length
+
+    else
+      i = 0
+      isInNameSpace = false
+      while i < namespaces.length and not isInNameSpace
+        isInNameSpace = listenerFunction.indexOf(namespaces[i]) > -1
         i++
 
-    return inNameSpace
+    return isInNameSpace
 
 
 if window?

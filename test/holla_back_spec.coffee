@@ -72,7 +72,7 @@ vows.describe('EventEmitter').addBatch({
       obj.unbind 'change', handler
       obj.trigger('change')
 
-      assert.equal invocations[0], 'awesome'
+      assert.notEqual invocations.indexOf('awesome'), -1
 
     "a handler of a namespace": (obj) ->
       invocations = []
@@ -84,7 +84,7 @@ vows.describe('EventEmitter').addBatch({
       obj.unbind '.world', handler
       obj.trigger('change')
 
-      assert.equal invocations[0], 'awesome'
+      assert.notEqual invocations.indexOf('awesome'), -1
 
   'Multi Namespaced Unbinding':
     topic: new HollaBack
@@ -149,13 +149,17 @@ vows.describe('EventEmitter').addBatch({
 
     "must match all trigger namespaces in order to be triggered": (obj) ->
       invocations = []
-      handler = -> invocations.push('trigger')
 
-      obj.bind('change.server.client', handler)
-      obj.bind('change.client', handler)
-      obj.trigger('change.server.client')
+      obj.bind('change.server.random', -> invocations.push('trigger_a')) # not invoked
+      obj.bind('change.server.client', -> invocations.push('trigger_b'))
+      obj.bind('change.client.server', -> invocations.push('trigger_c'))
+      obj.bind('change.client', -> invocations.push('trigger_d'))
+      obj.trigger('change.client.server')
 
-      assert.equal(invocations.length, 1)
+      assert.equal invocations.indexOf('trigger_a'), -1
+      assert.notEqual invocations.indexOf('trigger_b'), -1
+      assert.notEqual invocations.indexOf('trigger_c'), -1
+      assert.notEqual invocations.indexOf('trigger_d'), -1
 
 
 }).export(module)
