@@ -83,15 +83,14 @@ class HollaBack
     if _event?
       throw 'IllegalTrigger' if _event[0] is '.' or _event.indexOf(' ') > -1
 
+      identifiers = _event.split('.')
+      eventName = identifiers[0]
+      namespaces = identifiers[1..identifiers.length-1]
 
-    identifiers = _event.split('.')
-    eventName = identifiers[0]
-    namespaces = identifiers[1..identifiers.length-1]
-
-    if @events[eventName]?
-      for funcNamespace in @events[eventName]
-        if this.functionInNamepspace(funcNamespace, namespaces, true)
-          funcNamespace[0].apply(this, args)
+      if @events[eventName]?
+        for funcNamespace in @events[eventName]
+          if this.functionInNamepspace(funcNamespace, namespaces, true)
+            funcNamespace[0].apply(this, args)
 
     return null
 

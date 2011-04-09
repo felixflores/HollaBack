@@ -92,16 +92,16 @@
         if (_event[0] === '.' || _event.indexOf(' ') > -1) {
           throw 'IllegalTrigger';
         }
-      }
-      identifiers = _event.split('.');
-      eventName = identifiers[0];
-      namespaces = identifiers.slice(1, (identifiers.length - 1 + 1) || 9e9);
-      if (this.events[eventName] != null) {
-        _ref = this.events[eventName];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          funcNamespace = _ref[_i];
-          if (this.functionInNamepspace(funcNamespace, namespaces, true)) {
-            funcNamespace[0].apply(this, args);
+        identifiers = _event.split('.');
+        eventName = identifiers[0];
+        namespaces = identifiers.slice(1, (identifiers.length - 1 + 1) || 9e9);
+        if (this.events[eventName] != null) {
+          _ref = this.events[eventName];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            funcNamespace = _ref[_i];
+            if (this.functionInNamepspace(funcNamespace, namespaces, true)) {
+              funcNamespace[0].apply(this, args);
+            }
           }
         }
       }
