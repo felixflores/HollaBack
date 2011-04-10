@@ -14,4 +14,4 @@ app.bind "message.new", (message) ->
   console.log message
 
 app.bind "message.new.client", (message) ->
-  console.log message + 'crap'
+  console.log message
