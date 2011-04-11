@@ -60,12 +60,8 @@
             name = eventNames[_j];
             for (i = 0, _ref2 = this.events[name].length - 1; (0 <= _ref2 ? i <= _ref2 : i >= _ref2); (0 <= _ref2 ? i += 1 : i -= 1)) {
               namespacedHandler = this.events[name].shift();
-              matchNamespace = this.handlerInNamespace(namespacedHandler, namespaces);
-              if (func != null) {
-                matchFunction = namespacedHandler[0] === func;
-              } else {
-                matchFunction = true;
-              }
+              matchNamespace = this.handlerInNamespace(namespacedHandler, namespaces, false);
+              matchFunction = func != null ? namespacedHandler[0] === func : true;
               if (!(matchNamespace && matchFunction)) {
                 this.events[name].push(namespacedHandler);
               }

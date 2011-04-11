@@ -61,12 +61,8 @@ class HollaBack
         for name in eventNames
           for i in [0..@events[name].length-1]
             namespacedHandler = @events[name].shift()
-            matchNamespace = this.handlerInNamespace(namespacedHandler, namespaces)
-
-            if func?
-              matchFunction = namespacedHandler[0] is func
-            else
-              matchFunction = true
+            matchNamespace = this.handlerInNamespace(namespacedHandler, namespaces, false)
+            matchFunction = if func? then namespacedHandler[0] is func else true
 
             @events[name].push(namespacedHandler) unless matchNamespace and matchFunction
 
