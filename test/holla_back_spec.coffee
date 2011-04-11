@@ -74,6 +74,11 @@ vows.describe('EventEmitter').addBatch({
 
       assert.notEqual invocations.indexOf('awesome'), -1
 
+
+
+  'Multi Namespaced Unbinding':
+    topic: new HollaBack
+
     "a handler of a namespace": (obj) ->
       invocations = []
       handler = -> invocations.push('trigger')
@@ -85,9 +90,6 @@ vows.describe('EventEmitter').addBatch({
       obj.trigger('change')
 
       assert.notEqual invocations.indexOf('awesome'), -1
-
-  'Multi Namespaced Unbinding':
-    topic: new HollaBack
 
     "unbinds an event if it matches a namespace": (obj) ->
       invocations = []

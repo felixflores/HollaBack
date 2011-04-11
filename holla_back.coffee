@@ -23,10 +23,7 @@ class HollaBack
       identifiers = _event.split('.')
       eventName = identifiers.shift()
 
-      if identifiers.length is 0
-        handlerWithNamspace = [func]
-      else
-        handlerWithNamspace = [func].concat(identifiers)
+      handlerWithNamspace = if identifiers.length is 0 then [func] else [func].concat(identifiers)
 
       addEvent(eventName, handlerWithNamspace)
 
@@ -82,8 +79,8 @@ class HollaBack
       throw 'IllegalTrigger' if _event[0] is '.' or _event.indexOf(' ') > -1
 
       identifiers = _event.split('.')
-      eventName = identifiers[0]
-      namespaces = identifiers[1..identifiers.length-1]
+      eventName = identifiers.shift()
+      namespaces = identifiers
 
       if @events[eventName]?
         for funcNamespace in @events[eventName]

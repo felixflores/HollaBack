@@ -25,11 +25,7 @@
         _event = _ref[_i];
         identifiers = _event.split('.');
         eventName = identifiers.shift();
-        if (identifiers.length === 0) {
-          handlerWithNamspace = [func];
-        } else {
-          handlerWithNamspace = [func].concat(identifiers);
-        }
+        handlerWithNamspace = identifiers.length === 0 ? [func] : [func].concat(identifiers);
         addEvent(eventName, handlerWithNamspace);
       }
       return null;
@@ -90,8 +86,8 @@
           throw 'IllegalTrigger';
         }
         identifiers = _event.split('.');
-        eventName = identifiers[0];
-        namespaces = identifiers.slice(1, (identifiers.length - 1 + 1) || 9e9);
+        eventName = identifiers.shift();
+        namespaces = identifiers;
         if (this.events[eventName] != null) {
           _ref = this.events[eventName];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
