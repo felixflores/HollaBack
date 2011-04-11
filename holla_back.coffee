@@ -11,26 +11,24 @@ class HollaBack
   bind: (events, func) ->
     throw "BindMissingEventHandler" unless func
 
-    addEvent = (label, functionNameSpaceSet) =>
-      @events[label] = [] unless @events[label]?
-      @events[label].push(functionNameSpaceSet)
+    addEvent = (_event, handlerWithNamspace) =>
+      throw "EventNameUnacceptable" if _event.match(/^\.|^[0-9]|^$/)
+
+      @events[_event] = [] unless @events[_event]?
+      @events[_event].push(handlerWithNamspace)
 
       return null
 
     for _event in events.split(' ')
       identifiers = _event.split('.')
-      eventName = ''
-      functionNameSpaceSet = [func]
+      eventName = identifiers.shift()
 
-      for i in [0..identifiers.length-1]
-        throw "EventNameUnacceptable" if identifiers[i].match(/^\.|^[0-9]|^$/)
+      if identifiers.length is 0
+        handlerWithNamspace = [func]
+      else
+        handlerWithNamspace = [func].concat(identifiers)
 
-        if i is 0
-          eventName = identifiers[i]
-        else
-          functionNameSpaceSet.push(identifiers[i])
-
-      addEvent(eventName, functionNameSpaceSet)
+      addEvent(eventName, handlerWithNamspace)
 
     return null
 

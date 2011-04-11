@@ -6,34 +6,31 @@
       this.events = {};
     }
     HollaBack.prototype.bind = function(events, func) {
-      var addEvent, eventName, functionNameSpaceSet, i, identifiers, _event, _i, _len, _ref, _ref2;
+      var addEvent, eventName, handlerWithNamspace, identifiers, _event, _i, _len, _ref;
       if (!func) {
         throw "BindMissingEventHandler";
       }
-      addEvent = __bind(function(label, functionNameSpaceSet) {
-        if (this.events[label] == null) {
-          this.events[label] = [];
+      addEvent = __bind(function(_event, handlerWithNamspace) {
+        if (_event.match(/^\.|^[0-9]|^$/)) {
+          throw "EventNameUnacceptable";
         }
-        this.events[label].push(functionNameSpaceSet);
+        if (this.events[_event] == null) {
+          this.events[_event] = [];
+        }
+        this.events[_event].push(handlerWithNamspace);
         return null;
       }, this);
       _ref = events.split(' ');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         _event = _ref[_i];
         identifiers = _event.split('.');
-        eventName = '';
-        functionNameSpaceSet = [func];
-        for (i = 0, _ref2 = identifiers.length - 1; (0 <= _ref2 ? i <= _ref2 : i >= _ref2); (0 <= _ref2 ? i += 1 : i -= 1)) {
-          if (identifiers[i].match(/^\.|^[0-9]|^$/)) {
-            throw "EventNameUnacceptable";
-          }
-          if (i === 0) {
-            eventName = identifiers[i];
-          } else {
-            functionNameSpaceSet.push(identifiers[i]);
-          }
+        eventName = identifiers.shift();
+        if (identifiers.length === 0) {
+          handlerWithNamspace = [func];
+        } else {
+          handlerWithNamspace = [func].concat(identifiers);
         }
-        addEvent(eventName, functionNameSpaceSet);
+        addEvent(eventName, handlerWithNamspace);
       }
       return null;
     };
