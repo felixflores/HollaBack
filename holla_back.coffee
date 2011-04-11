@@ -11,11 +11,11 @@ class HollaBack
   bind: (events, func) ->
     throw "BindMissingEventHandler" unless func
 
-    addEvent = (_event, handlerWithNamspace) =>
+    addEvent = (_event, namespacedHandler) =>
       throw "EventNameUnacceptable" if _event.match(/^\.|^[0-9]|^$/)
 
       @events[_event] = [] unless @events[_event]?
-      @events[_event].push(handlerWithNamspace)
+      @events[_event].push(namespacedHandler)
 
       return null
 
@@ -23,9 +23,9 @@ class HollaBack
       identifiers = _event.split('.')
       eventName = identifiers.shift()
 
-      handlerWithNamspace = if identifiers.length is 0 then [func] else [func].concat(identifiers)
+      namespacedHandler = if identifiers.length is 0 then [func] else [func].concat(identifiers)
 
-      addEvent(eventName, handlerWithNamspace)
+      addEvent(eventName, namespacedHandler)
 
     return null
 
@@ -58,16 +58,15 @@ class HollaBack
 
         for name in eventNames
           for i in [0..@events[name].length-1]
-            namespacedFunc = @events[name].shift()
-
-            matchNamespace = this.functionInNamepspace(namespacedFunc, namespaces)
+            namespacedHandler = @events[name].shift()
+            matchNamespace = this.handlerInNamespace(namespacedHandler, namespaces)
 
             if func?
-              matchFunction = namespacedFunc[0] is func
+              matchFunction = namespacedHandler[0] is func
             else
               matchFunction = true
 
-            @events[name].push(namespacedFunc) unless matchNamespace and matchFunction
+            @events[name].push(namespacedHandler) unless matchNamespace and matchFunction
 
           delete @events[name] if @events[name].length is 0
 
@@ -83,34 +82,32 @@ class HollaBack
       namespaces = identifiers
 
       if @events[eventName]?
-        for funcNamespace in @events[eventName]
-          if this.functionInNamepspace(funcNamespace, namespaces, true)
-            funcNamespace[0].apply(this, args)
+        for namespacedHandler in @events[eventName]
+          if this.handlerInNamespace(namespacedHandler, namespaces, true)
+            namespacedHandler[0].apply(this, args)
 
     return null
 
-  functionInNamepspace: (listenerFunction, namespaces, strict) ->
-    return true if namespaces.length is 0 or listenerFunction.length is 1
+  handlerInNamespace: (namespacedHandler, namespaces, strict) ->
+    return true if namespaces.length is 0 or namespacedHandler.length is 1
 
     if strict
       i = 1
-      isInNameSpace = true
-      while i < listenerFunction.length
-        isInNameSpace = namespaces.indexOf(listenerFunction[i]) > -1
+      match = true
 
-        if isInNameSpace
-          i++
-        else
-          i = listenerFunction.length
+      while i < namespacedHandler.length
+        match = namespaces.indexOf(namespacedHandler[i]) > -1
+        i = if match then i + 1 else namespacedHandler.length
 
     else
       i = 0
-      isInNameSpace = false
-      while i < namespaces.length and not isInNameSpace
-        isInNameSpace = listenerFunction.indexOf(namespaces[i]) > -1
+      match = false
+
+      while i < namespaces.length and not match
+        match = namespacedHandler.indexOf(namespaces[i]) > -1
         i++
 
-    return isInNameSpace
+    return match
 
 
 if window?
