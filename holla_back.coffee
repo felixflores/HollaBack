@@ -1,5 +1,7 @@
 # HollaBack - Any object that extends HollaBack can serve as an event emitter
-# Felix Flores 2011 v0.1.0
+# Felix Flores 2011 v0.1.3
+
+# TODO Need to refactor unbind and handlerInNamespace function
 
 class HollaBack
   constructor: () ->
