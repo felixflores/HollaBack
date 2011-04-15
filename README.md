@@ -1,6 +1,6 @@
 # HollaBack
 
-HollaBack is an event emitter written in Coffee Script. All examples are written in Coffee Script.
+HollaBack is an event emitter written in CoffeeScript. All examples are written in CoffeeScript.
 
 ## Usage
 
